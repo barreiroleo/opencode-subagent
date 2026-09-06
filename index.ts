@@ -35,6 +35,29 @@ export default Plugin.define({
       event.input = { ...input, agent: selectedAgent }
     })
 
+    // File-based agents (implement, implement-simple) are not exposed to
+    // agent transforms, so the model is applied to the spawned session here.
+    const controller = new AbortController()
+    void (async () => {
+      for await (const event of ctx.event.subscribe({ signal: controller.signal })) {
+        if (event.type !== "session.created") continue
+        const d = event.data
+        if (!d.parentID || !d.agent || !TARGET_AGENTS.includes(d.agent)) continue
+        if (d.location?.directory && d.location.directory !== ctx.location.directory) continue
+        // Read shared storage so stale instances never apply an old selection.
+        const current = ((await ctx.storage.get("model")) as SelectedModel | undefined) ?? undefined
+        if (!current?.providerID || !current.id) continue
+        try {
+          await ctx.session.switchModel({
+            sessionID: d.sessionID,
+            model: { providerID: current.providerID, id: current.id, variant: current.variant } as Model.Ref,
+          })
+        } catch {}
+      }
+    })().catch(() => {})
+
+    return () => controller.abort()
+
     await ctx.rpc.register(Subagent, {
       async model(input) {
         const selection = input as { providerID: string; id: string; variant?: string }
