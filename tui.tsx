@@ -1,5 +1,6 @@
 import type { AgentInfo, ModelInfo } from "@opencode-ai/client"
 import { Plugin } from "@opencode-ai/plugin/tui"
+import { Subagent } from "./rpc"
 
 const HELP = `Usage:
 
@@ -34,7 +35,12 @@ export default Plugin.define({
       if (!model) return
 
       if (model.variants.length === 0) {
-        context.ui.toast.show({ message: `Subagent model: ${model.providerID}/${model.modelID}`, variant: "success" })
+        const result = (await context.client.rpc(Subagent).model({
+          providerID: model.providerID,
+          id: model.modelID,
+          variant: undefined,
+        })) as { ok: boolean; text: string }
+        context.ui.toast.show({ message: result.text, variant: result.ok ? "success" : "error" })
         return
       }
 
@@ -50,10 +56,12 @@ export default Plugin.define({
       })
       if (variant === undefined) return
 
-      context.ui.toast.show({
-        message: `Subagent model: ${model.providerID}/${model.modelID}${variant ? `#${variant}` : ""}`,
-        variant: "success",
-      })
+      const result = (await context.client.rpc(Subagent).model({
+        providerID: model.providerID,
+        id: model.modelID,
+        variant: variant || undefined,
+      })) as { ok: boolean; text: string }
+      context.ui.toast.show({ message: result.text, variant: result.ok ? "success" : "error" })
     }
 
     const pickAgent = async () => {
@@ -80,7 +88,8 @@ export default Plugin.define({
       })
       if (!agent) return
 
-      context.ui.toast.show({ message: `Subagent agent: ${agent.id}`, variant: "success" })
+      const result = (await context.client.rpc(Subagent).agent({ id: agent.id })) as { ok: boolean; text: string }
+      context.ui.toast.show({ message: result.text, variant: result.ok ? "success" : "error" })
     }
 
     const layer = () => ({
