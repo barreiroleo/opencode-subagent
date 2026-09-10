@@ -9,7 +9,7 @@ export default Plugin.define({
   id: "subagent",
   async setup(ctx) {
     let selectedModel = (await ctx.storage.get("model")) as SelectedModel | undefined
-    let selectedAgent = (await ctx.storage.get("agent")) as string | undefined
+    await ctx.storage.remove("agent")
 
     await ctx.agent.transform((editor) => {
       if (!selectedModel) return
@@ -24,15 +24,6 @@ export default Plugin.define({
           } as Model.Ref
         })
       }
-    })
-
-    await ctx.tool.hook("execute.before", (event) => {
-      if (event.tool !== "subagent" || !selectedAgent) return
-      const input = event.input as { agent?: string; sessionID?: string } | undefined
-      // A sessionID means the call continues an existing subagent
-      // conversation; the default agent only applies to fresh spawns.
-      if (!input || input.agent || input.sessionID) return
-      event.input = { ...input, agent: selectedAgent }
     })
 
     // File-based agents (implement, implement-simple) are not exposed to
@@ -78,20 +69,6 @@ export default Plugin.define({
         await ctx.agent.reload()
 
         return { ok: true, text: `Subagent model: ${selection.providerID}/${selection.id}${suffix}` }
-      },
-      async agent(input) {
-        const selection = input as { id: string }
-
-        const { data: agents } = await ctx.agent.list()
-        const found = agents.find((a) => a.id === selection.id)
-        if (!found || (found.mode !== "subagent" && found.mode !== "all")) {
-          return { ok: false, text: `Agent ${selection.id} is not an available subagent type.` }
-        }
-
-        selectedAgent = selection.id
-        await ctx.storage.set("agent", selectedAgent)
-
-        return { ok: true, text: `Subagent agent: ${selection.id}` }
       },
     })
 
