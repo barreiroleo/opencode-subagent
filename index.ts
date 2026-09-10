@@ -75,6 +75,13 @@ export default Plugin.define({
         const current = ((await ctx.storage.get("model")) as SelectedModel | undefined) ?? undefined
         return { model: current }
       },
+      async clear() {
+        selectedModel = undefined
+        await ctx.storage.remove("model")
+        await ctx.agent.reload()
+        await registration.events.emit("changed", {})
+        return { ok: true, text: "Subagent model cleared (agents use their configured model)." }
+      },
     })
 
     return () => controller.abort()

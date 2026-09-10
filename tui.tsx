@@ -6,11 +6,19 @@ import { Subagent } from "./rpc"
 
 const HELP = `Usage:
 
-  /subagent model    Select model and effort for subagent spawns`
+  /subagent model                     Select model and effort via picker
+  /subagent model <provider/model[#variant]>   Select directly
+  /subagent clear                     Clear the selection`
 
 type SelectedModel = { providerID: string; id: string; variant?: string }
 
 const label = (m: SelectedModel) => `${m.providerID}/${m.id}${m.variant ? `#${m.variant}` : ""}`
+
+const parseModel = (raw: string): SelectedModel | undefined => {
+  const [ref, variant = ""] = raw.split("#")
+  const [providerID = "", id = ""] = ref.split("/")
+  return providerID && id ? { providerID, id, variant: variant || undefined } : undefined
+}
 
 export default Plugin.define({
   id: "subagent.tui",
@@ -80,10 +88,27 @@ export default Plugin.define({
           palette: true,
           slash: { name: "subagent", arguments: true },
           run: async (input?: string) => {
-            const [first = ""] = (input ?? "").trim().split(/\s+/)
+            const [first = "", second = ""] = (input ?? "").trim().split(/\s+/)
+
+            if (first === "model" && !second) {
+              await pickModel()
+              return
+            }
 
             if (first === "model") {
-              await pickModel()
+              const ref = parseModel(second)
+              if (!ref) {
+                context.ui.dialog.alert({ title: "Subagent", message: HELP })
+                return
+              }
+              const result = (await context.client.rpc(Subagent).model(ref)) as { ok: boolean; text: string }
+              context.ui.toast.show({ message: result.text, variant: result.ok ? "success" : "error" })
+              return
+            }
+
+            if (first === "clear") {
+              const result = (await context.client.rpc(Subagent).clear({})) as { ok: boolean; text: string }
+              context.ui.toast.show({ message: result.text, variant: result.ok ? "success" : "error" })
               return
             }
 
