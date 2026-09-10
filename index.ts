@@ -60,11 +60,8 @@ export default Plugin.define({
           return { ok: false, text: `Model ${selection.providerID}/${selection.id}${suffix} not found in the catalog.` }
         }
 
-        selectedModel = {
-          providerID: selection.providerID,
-          id: selection.id,
-          variant: selection.variant || undefined,
-        }
+        const { providerID, id, variant } = selection
+        selectedModel = variant ? { providerID, id, variant } : { providerID, id }
         await ctx.storage.set("model", selectedModel)
         await ctx.agent.reload()
         await registration.events.emit("changed", { model: selectedModel })
