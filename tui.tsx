@@ -1,10 +1,16 @@
+/// <reference path="./jsx-env.d.ts" />
 import type { ModelInfo } from "@opencode-ai/client"
 import { Plugin } from "@opencode-ai/plugin/tui"
+import { Show } from "solid-js"
 import { Subagent } from "./rpc"
 
 const HELP = `Usage:
 
   /subagent model    Select model and effort for subagent spawns`
+
+type SelectedModel = { providerID: string; id: string; variant?: string }
+
+const label = (m: SelectedModel) => `${m.providerID}/${m.id}${m.variant ? `#${m.variant}` : ""}`
 
 export default Plugin.define({
   id: "subagent.tui",
@@ -87,6 +93,18 @@ export default Plugin.define({
       ],
     })
 
+    // Server storage is the source of truth; this ephemeral mirror is seeded
+    // once via get and live-updated by the changed event.
+    const [state, setState] = context.storage.memory<{ model?: SelectedModel }>("selected-model", {
+      initial: { model: undefined },
+    })
+    void context.client.rpc(Subagent).get({}).then((out) => {
+      setState((d) => { d.model = (out as { model?: SelectedModel }).model })
+    })
+    const off = context.client.rpc(Subagent).events.on("changed", (e) =>
+      setState((d) => { d.model = e.data.model as SelectedModel | undefined }),
+    )
+
     // The keymap layer must be owned by a rendered component; setup() runs
     // outside the host's keymap provider.
     context.ui.slot({
@@ -96,5 +114,16 @@ export default Plugin.define({
         return <box />
       },
     })
+
+    context.ui.slot({
+      append: "prompt.footer",
+      render: () => (
+        <Show when={state.model}>
+          {(m) => <text fg={context.theme.text.subdued}>subagent: {label(m())}</text>}
+        </Show>
+      ),
+    })
+
+    return () => off()
   },
 })

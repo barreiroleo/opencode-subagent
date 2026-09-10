@@ -47,7 +47,7 @@ export default Plugin.define({
       }
     })().catch(() => {})
 
-    await ctx.rpc.register(Subagent, {
+    const registration = await ctx.rpc.register(Subagent, {
       async model(input) {
         const selection = input as { providerID: string; id: string; variant?: string }
         const suffix = selection.variant ? `#${selection.variant}` : ""
@@ -67,8 +67,13 @@ export default Plugin.define({
         }
         await ctx.storage.set("model", selectedModel)
         await ctx.agent.reload()
+        await registration.events.emit("changed", { model: selectedModel })
 
         return { ok: true, text: `Subagent model: ${selection.providerID}/${selection.id}${suffix}` }
+      },
+      async get(input) {
+        const current = ((await ctx.storage.get("model")) as SelectedModel | undefined) ?? undefined
+        return { model: current }
       },
     })
 
