@@ -1,6 +1,7 @@
 import type { ModelInfo } from "@opencode-ai/client"
 import type { Context } from "@opencode-ai/plugin/tui/context"
-import { showResult, type SelectedModel } from "../model"
+import { type SelectedModel } from "../model"
+import { showResult } from "./toast"
 import { Subagent } from "../rpc"
 
 export const pickModel = async (context: Context) => {
