@@ -56,8 +56,6 @@ export default Plugin.define({
       }
     })().catch(() => {})
 
-    return () => controller.abort()
-
     await ctx.rpc.register(Subagent, {
       async model(input) {
         const selection = input as { providerID: string; id: string; variant?: string }
@@ -96,5 +94,7 @@ export default Plugin.define({
         return { ok: true, text: `Subagent agent: ${selection.id}` }
       },
     })
+
+    return () => controller.abort()
   },
 })

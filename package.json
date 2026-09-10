@@ -9,6 +9,6 @@
   "keywords": [],
   "type": "commonjs",
   "dependencies": {
-    "@opencode-ai/plugin": "0.0.0-beta-19157"
+    "@opencode-ai/plugin": "0.0.0-beta-19271"
   }
 }
