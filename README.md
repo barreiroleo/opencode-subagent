@@ -1,63 +1,63 @@
 # Subagent
 
-Subagent es un plugin de OpenCode V2 que permite elegir el modelo que usan los subagentes de forma
-dinámica, con el comando `/subagent`.
+Subagent is an OpenCode V2 plugin that lets you dynamically choose the model used by subagents with
+the `/subagent` command.
 
-## Uso
+## Usage
 
 ```
-/subagent model                              Picker de modelo y effort
-/subagent model <provider/model[#variant]>   Selección directa
-/subagent clear                              Limpia la selección
+/subagent model                              Model and effort picker
+/subagent model <provider/model[#variant]>   Direct selection
+/subagent clear                              Clears the selection
 ```
 
-Con selección activa, el footer del prompt muestra `subagent: provider/model#variant`.
+When a selection is active, the prompt footer displays `subagent: provider/model#variant`.
 
-## Cómo funciona
+## How it works
 
-El paquete define dos plugins sobre un mismo contrato RPC:
+The package defines two plugins over the same RPC contract:
 
-- **Plugin TUI**: corre en el cliente.
-  Registra el comando `/subagent`, los diálogos de selección y el indicador del footer.
-- **Plugin server**: corre junto al server de OpenCode.
-  Registra los métodos RPC, persiste la selección en `ctx.storage` (clave `model`) y la aplica a los
-  agentes y sesiones.
+- **TUI plugin**: runs in the client.
+  Registers the `/subagent` command, selection dialogs, and the footer indicator.
+- **Server plugin**: runs alongside the OpenCode server.
+  Registers the RPC methods, persists the selection in `ctx.storage` (key `model`), and applies it to
+  agents and sessions.
 
-El server es la fuente de verdad. La TUI mantiene un espejo efímero en memoria
-(`context.storage.memory`) que se siembra una vez con el método `get` y se mantiene actualizado con
-el evento `changed`.
+The server is the source of truth. The TUI maintains an ephemeral in-memory mirror
+(`context.storage.memory`) that is seeded once with the `get` method and kept up to date by the
+`changed` event.
 
 ```mermaid
 sequenceDiagram
-    actor U as Usuario
-    participant TUI as Plugin TUI
-    participant SRV as Plugin server
+    actor U as User
+    participant TUI as TUI plugin
+    participant SRV as Server plugin
     participant ST as ctx.storage
 
-    Note over TUI,SRV: Carga de la TUI
+    Note over TUI,SRV: TUI startup
     TUI->>SRV: rpc get()
-    SRV-->>TUI: selección actual
+    SRV-->>TUI: current selection
 
     U->>TUI: /subagent model
-    TUI->>TUI: picker (modelo y effort)
+    TUI->>TUI: picker (model and effort)
     TUI->>SRV: rpc model(provider, id, variant)
-    SRV->>SRV: valida contra el catálogo
-    SRV->>ST: set("model", selección)
+    SRV->>SRV: validates against the catalog
+    SRV->>ST: set("model", selection)
     SRV->>SRV: agent.reload() — applyModel
-    SRV-->>TUI: evento changed
-    TUI->>TUI: footer actualiza el indicador
+    SRV-->>TUI: changed event
+    TUI->>TUI: footer updates the indicator
 
-    Note over SRV: watchSessions aplica switchModel a cada sesión nueva de subagente
+    Note over SRV: watchSessions applies switchModel to each new subagent session
 ```
 
-## Desarrollo
+## Development
 
 ```sh
 bunx tsc --noEmit --strict --module nodenext --moduleResolution nodenext \
   --target esnext --jsx preserve --skipLibCheck index.ts tui.tsx
 ```
 
-> Referencias:
+> References:
 >
 > - [RPC guide](https://opencode.ai/v2/docs/build/plugins/rpc)
 > - [CLI plugin](https://opencode.ai/v2/docs/build/plugins/cli)
