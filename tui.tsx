@@ -1,4 +1,5 @@
 /// <reference path="./jsx-env.d.ts" />
+/** @jsxImportSource @opentui/solid */
 import { Plugin } from "@opencode/plugin/tui"
 import { commandLayer } from "./components/commands.jsx"
 import { Footer, selectedModelState } from "./components/footer.jsx"

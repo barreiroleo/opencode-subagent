@@ -1,4 +1,5 @@
 /// <reference path="../jsx-env.d.ts" />
+/** @jsxImportSource @opentui/solid */
 import type { Context } from "@opencode/plugin/tui/context"
 import { Show } from "solid-js"
 import type { Store } from "solid-js/store"
