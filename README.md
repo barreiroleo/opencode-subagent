@@ -13,6 +13,28 @@ the `/subagent` command.
 
 When a selection is active, the prompt footer displays `subagent: provider/model#variant`.
 
+## Showcase
+
+Select a model from the catalog:
+
+![Subagent model picker](screenshots/model-picker.png)
+
+Choose the subagent effort:
+
+![Subagent effort picker](screenshots/variant-picker.png)
+
+The active model and effort are shown in the prompt footer:
+
+![Selected subagent model](screenshots/selected-model.png)
+
+The main session can use a different model from its subagent:
+
+![Subagent running with a different model](screenshots/subagent-spawn.png)
+
+Entering the subagent session shows the selected model in its response:
+
+![Subagent session showing GLM-5.3-Flash](screenshots/subagent-child.png)
+
 ## How it works
 
 The package defines two plugins over the same RPC contract:
