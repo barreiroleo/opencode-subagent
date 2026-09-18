@@ -1,5 +1,5 @@
 /// <reference path="./jsx-env.d.ts" />
-import { Plugin } from "@opencode-ai/plugin/tui"
+import { Plugin } from "@opencode/plugin/tui"
 import { commandLayer } from "./components/commands"
 import { Footer, selectedModelState } from "./components/footer"
 import { pickModel } from "./components/picker"

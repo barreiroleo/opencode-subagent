@@ -2,18 +2,23 @@
   "name": "subagent",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "type": "commonjs",
+  "exports": {
+    ".": "./index.ts",
+    "./tui": "./tui.tsx"
+  },
   "dependencies": {
-    "@opencode-ai/plugin": "0.0.0-beta-19271"
+    "@opencode/client": "2.0.7",
+    "@opencode/plugin": "2.0.7"
   },
   "devDependencies": {
     "@opentui/core": "^0.5.11",
     "@opentui/solid": "^0.5.11",
-    "solid-js": "^1.9.15"
+    "solid-js": "1.9.12"
   }
 }

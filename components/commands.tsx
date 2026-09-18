@@ -1,4 +1,4 @@
-import type { Context, KeymapLayer } from "@opencode-ai/plugin/tui/context"
+import type { Context, KeymapLayer } from "@opencode/plugin/tui/context"
 import { parseModel } from "../model"
 import { showResult } from "./toast"
 import { Subagent } from "../rpc"

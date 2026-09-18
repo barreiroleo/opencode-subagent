@@ -1,5 +1,5 @@
 /// <reference path="../jsx-env.d.ts" />
-import type { Context } from "@opencode-ai/plugin/tui/context"
+import type { Context } from "@opencode/plugin/tui/context"
 import { Show } from "solid-js"
 import type { Store } from "solid-js/store"
 import { label, type SelectedModel } from "../model"

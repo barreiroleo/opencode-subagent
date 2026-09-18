@@ -1,4 +1,4 @@
-import { type Model, type Plugin } from "@opencode-ai/plugin"
+import { type Model, type Plugin } from "@opencode/plugin"
 import { type SelectedModel } from "./model"
 
 type Context = Plugin.Context

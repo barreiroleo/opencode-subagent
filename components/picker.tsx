@@ -1,5 +1,5 @@
-import type { ModelInfo } from "@opencode-ai/client"
-import type { Context } from "@opencode-ai/plugin/tui/context"
+import type { ModelInfo } from "@opencode/client"
+import type { Context } from "@opencode/plugin/tui/context"
 import { type SelectedModel } from "../model"
 import { showResult } from "./toast"
 import { Subagent } from "../rpc"
@@ -9,7 +9,7 @@ export const pickModel = async (context: Context) => {
   await context.data.location.model.sync(location)
   const models = (context.data.location.model.list(location) ?? [])
     .slice()
-    .sort((a, b) => a.providerID.localeCompare(b.providerID) || a.modelID.localeCompare(b.modelID))
+    .sort((a, b) => a.providerID.localeCompare(b.providerID) || a.id.localeCompare(b.id))
 
   if (models.length === 0) {
     context.ui.toast.show({ message: "No models in the catalog", variant: "error" })
@@ -20,9 +20,9 @@ export const pickModel = async (context: Context) => {
     title: "Subagent model",
     placeholder: "Filter models…",
     options: models.map((m) => ({
-      title: m.modelID,
+      title: m.id,
       value: m,
-      description: m.name !== m.modelID ? m.name : undefined,
+      description: m.name !== m.id ? m.name : undefined,
       category: m.providerID,
     })),
   })
@@ -33,7 +33,7 @@ export const pickModel = async (context: Context) => {
   // without variants skip the dialog entirely.
   const variant = model.variants.length
     ? await context.ui.dialog.select<string>({
-        title: `Effort — ${model.modelID}`,
+        title: `Effort — ${model.id}`,
         placeholder: "Filter efforts…",
         options: [
           { title: "Default (no variant)", value: "" },
@@ -45,7 +45,7 @@ export const pickModel = async (context: Context) => {
 
   const selection: SelectedModel = {
     providerID: model.providerID,
-    id: model.modelID,
+    id: model.id,
     variant: variant || undefined,
   }
   const result = (await context.client.rpc(Subagent).model(selection)) as { ok: boolean; text: string }

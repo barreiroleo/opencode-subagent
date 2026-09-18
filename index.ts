@@ -1,4 +1,4 @@
-import { Plugin } from "@opencode-ai/plugin"
+import { Plugin } from "@opencode/plugin"
 import { applyModel, readModel, watchSessions } from "./agents"
 import { label, type SelectedModel } from "./model"
 import { Subagent } from "./rpc"
@@ -18,9 +18,9 @@ export default Plugin.define({
       async model(input) {
         const selection = input as { providerID: string; id: string; variant?: string }
 
-        const { data: models } = await ctx.catalog.model.list()
+        const { data: models } = await ctx.model.list()
         const found = models.find(
-          (m) => m.providerID === selection.providerID && (m.modelID === selection.id || m.id === selection.id),
+          (m) => m.providerID === selection.providerID && m.id === selection.id,
         )
         if (!found || (selection.variant && !found.variants.some((v) => v.id === selection.variant))) {
           return { ok: false, text: `Model ${label(selection)} not found in the catalog.` }
@@ -34,7 +34,8 @@ export default Plugin.define({
         return { ok: true, text: `Subagent model: ${label(selection)}` }
       },
       async get() {
-        return { model: await readModel(ctx) }
+        const model = await readModel(ctx)
+        return model ? { model } : {}
       },
       async clear() {
         selectedModel = undefined
