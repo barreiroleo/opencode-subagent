@@ -1,7 +1,7 @@
 import { Plugin } from "@opencode/plugin"
-import { applyModel, readModel, watchSessions } from "./agents"
-import { label, type SelectedModel } from "./model"
-import { Subagent } from "./rpc"
+import { applyModel, readModel, watchSessions } from "./agents.js"
+import { label, type SelectedModel } from "./model.js"
+import { Subagent } from "./rpc.js"
 
 export default Plugin.define({
   id: "subagent",

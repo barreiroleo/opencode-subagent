@@ -2,8 +2,8 @@
 import type { Context } from "@opencode/plugin/tui/context"
 import { Show } from "solid-js"
 import type { Store } from "solid-js/store"
-import { label, type SelectedModel } from "../model"
-import { Subagent } from "../rpc"
+import { label, type SelectedModel } from "../model.js"
+import { Subagent } from "../rpc.js"
 
 type State = { model?: SelectedModel }
 

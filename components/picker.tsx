@@ -1,8 +1,8 @@
 import type { ModelInfo } from "@opencode/client"
 import type { Context } from "@opencode/plugin/tui/context"
-import { type SelectedModel } from "../model"
-import { showResult } from "./toast"
-import { Subagent } from "../rpc"
+import { type SelectedModel } from "../model.js"
+import { showResult } from "./toast.js"
+import { Subagent } from "../rpc.js"
 
 export const pickModel = async (context: Context) => {
   const location = context.location ?? context.data.location.default()

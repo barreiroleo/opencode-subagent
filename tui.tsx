@@ -1,8 +1,8 @@
 /// <reference path="./jsx-env.d.ts" />
 import { Plugin } from "@opencode/plugin/tui"
-import { commandLayer } from "./components/commands"
-import { Footer, selectedModelState } from "./components/footer"
-import { pickModel } from "./components/picker"
+import { commandLayer } from "./components/commands.jsx"
+import { Footer, selectedModelState } from "./components/footer.jsx"
+import { pickModel } from "./components/picker.jsx"
 
 export default Plugin.define({
   id: "subagent.tui",

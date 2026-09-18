@@ -1,5 +1,5 @@
 import { type Model, type Plugin } from "@opencode/plugin"
-import { type SelectedModel } from "./model"
+import { type SelectedModel } from "./model.js"
 
 type Context = Plugin.Context
 

@@ -1,7 +1,7 @@
 import type { Context, KeymapLayer } from "@opencode/plugin/tui/context"
-import { parseModel } from "../model"
-import { showResult } from "./toast"
-import { Subagent } from "../rpc"
+import { parseModel } from "../model.js"
+import { showResult } from "./toast.js"
+import { Subagent } from "../rpc.js"
 
 const HELP = `Usage:
 
